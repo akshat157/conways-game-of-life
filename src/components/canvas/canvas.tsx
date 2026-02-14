@@ -163,6 +163,6 @@ export default function Canvas({
     <div
       ref={wrapperRef}
       className="w-full h-full rounded-lg overflow-hidden"
-    ></div>
+    />
   );
 }

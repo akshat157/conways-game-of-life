@@ -5,6 +5,7 @@ import Canvas from "./components/canvas/canvas";
 import { Button } from "./components/ui/button";
 import ControlWrapper from "./components/controls/control-wrapper";
 import { Slider } from "./components/ui/slider";
+import { Dna, Gauge, Pause, Play, RotateCcw, StepForward } from "lucide-react";
 
 function countNeighbours(grid: number[][], row: number, col: number): number {
   let count = 0;
@@ -708,21 +709,37 @@ function App() {
           proceedGen={proceedGen}
         />
         <ControlWrapper>
-          <div>Generation: {simulation.gen}</div>
-          <Button onClick={() => setIsPlaying(!isPlaying)}>
-            {isPlaying ? "Pause" : "Play"}
+          <div title="Current Generation" className="flex items-center gap-2">
+            <Dna className="w-6 h-6" /> {simulation.gen}
+          </div>
+          <Button title="Reset and Clear" onClick={handleReset}>
+            <RotateCcw className="w-6 h-6" />
           </Button>
-          <Button onClick={handleNext}>Next</Button>
-          <Button onClick={handleReset}>Reset</Button>
-          <Slider
-            value={speed}
-            onValueChange={(newValue) => setSpeed(newValue)}
-            className="w-32"
-            defaultValue={speed}
-            max={maxSpeed}
-            min={minSpeed}
-            step={0.1}
-          />
+          <Button
+            title={isPlaying ? "Pause Simulation" : "Start Simulation"}
+            onClick={() => setIsPlaying(!isPlaying)}
+          >
+            {isPlaying ? (
+              <Pause className="w-6 h-6" />
+            ) : (
+              <Play className="w-6 h-6" />
+            )}
+          </Button>
+          <Button title="Next Generation" onClick={handleNext}>
+            <StepForward className="w-6 h-6" />
+          </Button>
+          <div title="Simulation Speed" className="flex items-center gap-2">
+            <Gauge className="w-6 h-6" />
+            <Slider
+              value={speed}
+              onValueChange={(newSpeed) => setSpeed(newSpeed)}
+              className="w-32"
+              defaultValue={speed}
+              max={maxSpeed}
+              min={minSpeed}
+              step={0.1}
+            />
+          </div>
         </ControlWrapper>
       </div>
     </>
