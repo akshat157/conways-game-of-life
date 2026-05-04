@@ -55,6 +55,9 @@ export default function Canvas({
   const speedRef = useRef<number>(speed[0]);
   const proceedGenRef = useRef(proceedGen);
 
+  const isPanningRef = useRef(false);
+  const lastPosRef = useRef({ x: 0, y: 0 });
+
   useEffect(() => {
     if (!wrapperRef.current) return;
     let destroyed = false;
@@ -93,18 +96,61 @@ export default function Canvas({
       gridGraphic.cursor = "pointer";
 
       gridGraphic.on("pointerdown", (e: FederatedPointerEvent) => {
-        const position = e.getLocalPosition(gridGraphic);
+        switch (e.button) {
+          case 0:
+            {
+              const position = e.getLocalPosition(gridGraphic);
 
-        const col = Math.floor(position.x / (cellSize + gridGap));
-        const row = Math.floor(position.y / (cellSize + gridGap));
+              const col = Math.floor(position.x / (cellSize + gridGap));
+              const row = Math.floor(position.y / (cellSize + gridGap));
 
-        setSimulation((prevSimulation) => {
-          const newGrid = prevSimulation.grid.map((r) => r.slice());
-          if (newGrid[row] && newGrid[row][col] !== undefined) {
-            newGrid[row][col] = newGrid[row][col] === 0 ? 1 : 0;
-          }
-          return { ...prevSimulation, grid: newGrid };
-        });
+              setSimulation((prevSimulation) => {
+                const newGrid = prevSimulation.grid.map((r) => r.slice());
+                if (newGrid[row] && newGrid[row][col] !== undefined) {
+                  newGrid[row][col] = newGrid[row][col] === 0 ? 1 : 0;
+                }
+                return { ...prevSimulation, grid: newGrid };
+              });
+            }
+            break;
+
+          case 1:
+            {
+              isPanningRef.current = true;
+              gridGraphic.cursor = "grabbing";
+
+              lastPosRef.current = {
+                x: e.globalX,
+                y: e.globalY,
+              };
+            }
+            break;
+        }
+      });
+
+      gridGraphic.on("pointermove", (e: FederatedPointerEvent) => {
+        if (!isPanningRef.current) return;
+
+        const dx = e.globalX - lastPosRef.current.x;
+        const dy = e.globalY - lastPosRef.current.y;
+
+        container.x += dx;
+        container.y += dy;
+
+        lastPosRef.current = {
+          x: e.globalX,
+          y: e.globalY,
+        };
+      });
+
+      gridGraphic.on("pointerup", () => {
+        isPanningRef.current = false;
+        gridGraphic.cursor = "pointer";
+      });
+
+      gridGraphic.on("pointerupoutside", () => {
+        isPanningRef.current = false;
+        gridGraphic.cursor = "pointer";
       });
 
       container.addChild(gridGraphic);
@@ -115,6 +161,7 @@ export default function Canvas({
       destroyed = true;
       appRef.current?.destroy(true, true);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -139,6 +186,7 @@ export default function Canvas({
       }));
       elapsedRef.current = 0;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -162,7 +210,7 @@ export default function Canvas({
   return (
     <div
       ref={wrapperRef}
-      className="w-full h-full rounded-lg overflow-hidden"
+      className="w-full h-full flex justify-center rounded-lg overflow-hidden"
     />
   );
 }
