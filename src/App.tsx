@@ -699,8 +699,42 @@ function App() {
 
   return (
     <>
-      <h2 className="text-3xl font-bold mb-4">Conway's Game of Life</h2>
-      <div className="flex flex-col w-300 h-200 justify-center items-center">
+      <div className="px-4 mb-4">
+        <h2 className="text-4xl font-bold mb-4">Conway's Game of Life</h2>
+        <p className="text-justify">
+          <strong>John Conway's game of life</strong>, also known as{" "}
+          <strong>Game of Life</strong> is a cellular automation created by the
+          British mathematician{" "}
+          <a href="http://https://en.wikipedia.org/wiki/John_Horton_Conway">
+            John Horton Conway
+          </a>{" "}
+          in 1970. Game of life is a <strong>zero-player game</strong>,
+          essentially a simulation that runs itself based on the initial state
+          (or configuration) and a pre-defined set of rules and no further
+          inputs during its runtime. These rules define a cell's interaction
+          with its 8 neighbours and are also the basis of the calculation of the
+          next generation of the configuration.
+        </p>
+        <h4 className="text-left text-2xl my-4 font-bold">Rules</h4>
+        <div>
+          <ul className="text-justify list-decimal list-inside">
+            <li>
+              Any live cell with less than 2 live neightbours will die, as if by
+              under-population.
+            </li>
+            <li>
+              Any live cell with more than 3 live neighbours will die, as if by
+              over-population.
+            </li>
+            <li>Any live cell with 2 or 3 live neighbours will stay alive.</li>
+            <li>
+              Any dead cell with exactly 3 live neighbours will become alive, as
+              if by reproduction.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="flex flex-col justify-center items-center">
         <Canvas
           simulation={simulation}
           setSimulation={setSimulation}
@@ -710,13 +744,16 @@ function App() {
         />
         <ControlWrapper>
           <div title="Current Generation" className="flex items-center gap-2">
-            <Dna className="w-6 h-6" /> {simulation.gen}
+            <Dna className="w-6 h-6" />{" "}
+            <span className="min-w-12 flex justify-end-safe items-center outline-2 rounded-lg px-2">
+              {simulation.gen}
+            </span>
           </div>
           <Button title="Reset and Clear" onClick={handleReset}>
             <RotateCcw className="w-6 h-6" />
           </Button>
           <Button
-            title={isPlaying ? "Pause Simulation" : "Start Simulation"}
+            title={isPlaying ? "Pause Simulation" : "Play Simulation"}
             onClick={() => setIsPlaying(!isPlaying)}
           >
             {isPlaying ? (
